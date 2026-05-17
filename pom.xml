@@ -8,6 +8,7 @@
 	<modules>
 		<module>tenant-service</module>
         <module>naming-service</module>
+        <module>auth-service</module>
     </modules>
 
 	<parent>

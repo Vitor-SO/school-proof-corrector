@@ -35,3 +35,5 @@ build/
 ### config ###
 .env
 application.yml
+private.key
+public.key
