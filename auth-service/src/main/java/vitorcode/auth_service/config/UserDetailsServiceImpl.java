@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vitorcode.auth_service.dtos.AdminUserResponse;
 import vitorcode.auth_service.exceptions.UserNotFoundException;
@@ -12,16 +11,14 @@ import vitorcode.auth_service.mappers.AuthUserMapper;
 import vitorcode.auth_service.repositories.AdminUserRepository;
 
 @Service
-public class UserDetailsServiceImpl implements UserDetailsService {
-    private static final Logger log = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
+public class AdminUserDetailsServiceImpl implements UserDetailsService {
+    private static final Logger log = LoggerFactory.getLogger(AdminUserDetailsServiceImpl.class);
     private final AdminUserRepository adminUserRepository;
     private final AuthUserMapper mapper;
-    private final PasswordEncoder passwordEncoder;
 
-    public UserDetailsServiceImpl(AdminUserRepository adminUserRepository, AuthUserMapper mapper, PasswordEncoder passwordEncoder) {
+    public AdminUserDetailsServiceImpl(AdminUserRepository adminUserRepository, AuthUserMapper mapper) {
         this.adminUserRepository = adminUserRepository;
         this.mapper = mapper;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -32,6 +29,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             return new UserAuthenticated(mapper.toAuthUser(admin));
         }
 
-        throw new UserNotFoundException("[M-auth.config.UserDatailsServiceImpl] user not found");
+        throw new UserNotFoundException("[M-auth.config.UserDetailsServiceImpl] usuario admin master nao foi encontrado");
     }
 }
