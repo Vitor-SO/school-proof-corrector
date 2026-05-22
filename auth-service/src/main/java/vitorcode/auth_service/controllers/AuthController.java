@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vitorcode.auth_service.dtos.LoginAdminRequest;
 import vitorcode.auth_service.dtos.LoginAdminResponse;
+import vitorcode.auth_service.dtos.LoginRequest;
+import vitorcode.auth_service.dtos.LoginResponse;
 import vitorcode.auth_service.services.AuthService;
 
 @RestController
@@ -17,7 +19,12 @@ public class AuthController {
     }
 
     @PostMapping("/admin/login")
-    public ResponseEntity<LoginAdminResponse> login(@RequestBody @Valid LoginAdminRequest dto){
+    public ResponseEntity<LoginAdminResponse> adminLogin(@RequestBody @Valid LoginAdminRequest dto){
+        return ResponseEntity.ok().body(authService.adminLogin(dto));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest dto){
         return ResponseEntity.ok().body(authService.login(dto));
     }
 }

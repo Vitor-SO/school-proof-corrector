@@ -74,4 +74,24 @@ public class GlobalExceptionHandler {
 
         return error;
     }
+
+    @ExceptionHandler(LoginParamsIsNullException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public Map<String,String> handleLoginParamsIsNullException(LoginParamsIsNullException ex){
+        Map<String,String> error = new HashMap<>();
+        error.put("message: ", ex.getMessage());
+
+        return error;
+    }
+
+    @ExceptionHandler(LoginCredentialsFailed.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public Map<String,String> handleLoginCredentialsFailed(LoginCredentialsFailed ex){
+        Map<String,String> error = new HashMap<>();
+        error.put("message: ", ex.getMessage());
+
+        return error;
+    }
 }

@@ -3,7 +3,7 @@ package vitorcode.auth_service.repositories;
 import org.springframework.stereotype.Repository;
 import vitorcode.auth_service.datasources.TenantDataSource;
 import vitorcode.auth_service.dtos.AdminUserResponse;
-import vitorcode.auth_service.dtos.LoginTenantServiceRequest;
+import vitorcode.auth_service.dtos.GetTenantAdminUserByUsernameRequest;
 
 @Repository
 public class AdminUserRepository {
@@ -14,6 +14,6 @@ public class AdminUserRepository {
     }
 
     public AdminUserResponse findByUsername(String username){
-        return tenantDataSource.getAdminUserByUsername(new LoginTenantServiceRequest(username));
+        return tenantDataSource.getAdminUserByUsername(new GetTenantAdminUserByUsernameRequest(username));
     }
 }

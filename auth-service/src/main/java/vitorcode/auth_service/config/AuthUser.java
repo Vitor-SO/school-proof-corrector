@@ -9,7 +9,7 @@ public record AuthUser(
         UUID id,
         String username,
         String password,
-        List<String> roles,
-        boolean enabled
+        List<String> roles
+//        boolean enabled
 ) implements AuthenticableUser {
 }

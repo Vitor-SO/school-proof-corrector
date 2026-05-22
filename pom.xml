@@ -10,6 +10,7 @@
         <module>naming-service</module>
         <module>auth-service</module>
 		<module>api-gateway</module>
+		<module>security-jwt-lib</module>
 	</modules>
 
 	<parent>

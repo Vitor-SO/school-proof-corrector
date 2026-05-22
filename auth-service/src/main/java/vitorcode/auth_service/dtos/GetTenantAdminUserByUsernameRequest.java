@@ -1,6 +1,6 @@
 package vitorcode.auth_service.dtos;
 
-public record LoginTenantServiceRequest(
+public record GetTenantAdminUserByUsernameRequest(
         String username
 ) {
 }

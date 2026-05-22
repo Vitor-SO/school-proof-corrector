@@ -1,5 +1,6 @@
 package vitorcode.auth_service.dtos;
 
+import java.time.Instant;
 import java.util.UUID;
 
 public record AdminUserResponse(
@@ -7,6 +8,6 @@ public record AdminUserResponse(
    String name,
    String username,
    String password,
-   String createdAt,
-   String updatedAt
+   Instant createdAt,
+   Instant updatedAt
 ) {}
