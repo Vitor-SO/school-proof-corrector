@@ -54,8 +54,6 @@ public class AuthService {
 
         UserResponse user = authRepository.tenantLogin(dto);
 
-        System.out.println(user);
-
         if(user == null){
             throw new UserNotFoundException("[M-auth.service.login] Login falhou nao foi possivel encontrar o usuario");
         }

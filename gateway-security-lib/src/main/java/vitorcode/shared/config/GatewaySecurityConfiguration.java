@@ -19,32 +19,21 @@ public class GatewaySecurityConfiguration {
     private RSAPublicKey publicKey;
 
     @Bean
-    SecurityWebFilterChain securityWebFilterChain(
-            ServerHttpSecurity http
-    ) {
-
-        http
-                .csrf(ServerHttpSecurity.CsrfSpec::disable)
-
-                .authorizeExchange(exchange -> exchange
-                        .pathMatchers(
+    SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+        http.csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .authorizeExchange(exchange ->
+                        exchange.pathMatchers(
                                 "/auth/admin/login",
                                 "/tenant/admin/login",
                                 "/auth/login",
-                                "/tenant/login"
-                        ).permitAll()
-
-                        .anyExchange().authenticated()
-                )
-
-                .oauth2ResourceServer(oauth ->
-                        oauth.jwt(Customizer.withDefaults()));
-
+                                "/tenant/login").permitAll()
+                                .anyExchange().authenticated()).
+                oauth2ResourceServer(oauth -> oauth.jwt(Customizer.withDefaults()));
         return http.build();
     }
 
     @Bean
-    ReactiveJwtDecoder reactiveJwtDecoder(){
+    ReactiveJwtDecoder reactiveJwtDecoder() {
         return NimbusReactiveJwtDecoder.withPublicKey(publicKey).build();
     }
 }

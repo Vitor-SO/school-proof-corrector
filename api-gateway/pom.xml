@@ -20,7 +20,7 @@
     <dependencies>
         <dependency>
             <groupId>vitorcode</groupId>
-            <artifactId>security-jwt-lib</artifactId>
+            <artifactId>gateway-security-lib</artifactId>
             <version>1.0.0</version>
         </dependency>
 

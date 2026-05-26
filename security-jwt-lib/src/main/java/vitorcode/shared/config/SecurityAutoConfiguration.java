@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.security.interfaces.RSAPublicKey;
@@ -21,6 +22,13 @@ public class SecurityAutoConfiguration {
     private RSAPublicKey publicKey;
 
     @Bean
+    public JwtTenantFilter jwtTenantFilter(
+            JwtDecoder jwtDecoder
+    ) {
+        return new JwtTenantFilter(jwtDecoder);
+    }
+
+    @Bean
     JwtDecoder jwtDecoder() {
         return NimbusJwtDecoder
                 .withPublicKey(publicKey)
@@ -29,7 +37,8 @@ public class SecurityAutoConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(
-            HttpSecurity http
+            HttpSecurity http,
+            JwtTenantFilter jwtTenantFilter
     ) throws Exception {
 
         http
@@ -42,8 +51,15 @@ public class SecurityAutoConfiguration {
                         .requestMatchers("/tenant/login").permitAll()
                         .anyRequest().authenticated()
                 )
-                    .oauth2ResourceServer(conf ->
-                        conf.jwt(Customizer.withDefaults()));
+
+                .oauth2ResourceServer(conf ->
+                        conf.jwt(Customizer.withDefaults())
+                );
+
+        http.addFilterBefore(
+                jwtTenantFilter,
+                BearerTokenAuthenticationFilter.class
+        );
 
         return http.build();
     }
