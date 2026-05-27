@@ -31,4 +31,14 @@ public class GlobalExceptionHandler {
 
         return error;
     }
+
+    @ExceptionHandler(CustomNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public Map<String, String> handleCustomNotFoundException(CustomNotFoundException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("message error: ", ex.getMessage());
+
+        return error;
+    }
 }

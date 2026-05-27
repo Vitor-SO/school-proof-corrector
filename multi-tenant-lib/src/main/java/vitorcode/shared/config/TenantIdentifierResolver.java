@@ -11,12 +11,12 @@ import java.util.Map;
 
 @Component
 public class TenantIdentifierResolver implements CurrentTenantIdentifierResolver<String>, HibernatePropertiesCustomizer {
-
-    private static final Logger log = LoggerFactory.getLogger(TenantIdentifierResolver.class);
+    private static final String DEFAULT_TENANT = "public";
 
     @Override
     public String resolveCurrentTenantIdentifier() {
-        return TenantContext.getCurrentTenant();
+        String tenant = TenantContext.getCurrentTenant();
+        return tenant != null ? tenant : DEFAULT_TENANT;
     }
 
     @Override
