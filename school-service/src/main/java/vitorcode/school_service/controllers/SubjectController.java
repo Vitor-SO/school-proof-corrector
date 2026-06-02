@@ -3,6 +3,7 @@ package vitorcode.school_service.controllers;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vitorcode.school_service.dtos.CreateAnswersKeyRequest;
 import vitorcode.school_service.dtos.CreateSubjectRequest;
 import vitorcode.school_service.services.SubjectService;
 
@@ -18,6 +19,13 @@ public class SubjectController {
     @PostMapping("/create")
     public ResponseEntity<ResponseBody> create(@RequestBody @Valid CreateSubjectRequest request){
         subjectService.create(request);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("answers-key")
+    public ResponseEntity<ResponseBody> createAnswersKey(@RequestBody @Valid CreateAnswersKeyRequest request){
+        subjectService.createAnswersKey(request);
 
         return ResponseEntity.ok().build();
     }
