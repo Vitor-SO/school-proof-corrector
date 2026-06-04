@@ -15,9 +15,11 @@ public class ClassEntity {
     private UUID id;
 
     private String name;
+
     @Column(nullable = false, name = "created_at")
     @CreationTimestamp
     private Instant createdAt;
+
     @Column(nullable = false, name = "updated_at")
     @UpdateTimestamp
     private Instant updatedAt;

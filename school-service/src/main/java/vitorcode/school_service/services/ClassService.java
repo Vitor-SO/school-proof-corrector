@@ -9,25 +9,19 @@ import vitorcode.school_service.repositories.ClassRepository;
 
 @Service
 public class ClassService {
-    private final ClassRepository schoolRepository;
+    private final ClassRepository classRepository;
 
-    public ClassService(ClassRepository schoolRepository) {
-        this.schoolRepository = schoolRepository;
+    public ClassService(ClassRepository classRepository) {
+        this.classRepository = classRepository;
     }
 
     public void create(@Valid CreateClassRequest dto) {
-        try {
-            boolean classNameAlreadyExists = schoolRepository.findByName(dto.name()).isPresent();
-            if(classNameAlreadyExists){
-                throw new AlreadyExistsException("O nome da escola já existe");
-            }
-            ClassEntity entity = new ClassEntity();
-            entity.setName(dto.name());
-            schoolRepository.save(entity);
-        }catch (AlreadyExistsException sna){
-            throw sna;
-        }catch (Exception e) {
-            throw new RuntimeException(e);
+        boolean classNameAlreadyExists = classRepository.findByName(dto.name()).isPresent();
+        if (classNameAlreadyExists) {
+            throw new AlreadyExistsException("O nome da escola já existe");
         }
+        ClassEntity entity = new ClassEntity();
+        entity.setName(dto.name());
+        classRepository.save(entity);
     }
 }

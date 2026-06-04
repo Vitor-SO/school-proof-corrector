@@ -4,24 +4,24 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "student")
-public class StudentEntity {
+@Table(name = "users")
+public class UsersEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
+    @Column(nullable = false)
     private String name;
+    @Column(nullable = false)
+    private String email;
+    @Column(nullable = false)
+    private String password;
     @ManyToOne
-    @JoinColumn(name = "school_year_id")
-    private SchoolYearEntity schoolYear;
-    @ManyToOne
-    @JoinColumn(name = "school_grades_id")
-    private SchoolGradesEntity schoolGrades;
+    @JoinColumn(name = "role_id")
+    private Roles role;
     @Column(nullable = false, name = "created_at")
     @CreationTimestamp
     private Instant createdAt;
@@ -45,6 +45,14 @@ public class StudentEntity {
         this.name = name;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public Instant getCreatedAt() {
         return createdAt;
     }
@@ -61,19 +69,19 @@ public class StudentEntity {
         this.updatedAt = updatedAt;
     }
 
-    public SchoolYearEntity getSchoolYear() {
-        return schoolYear;
+    public String getEmail() {
+        return email;
     }
 
-    public void setSchoolYear(SchoolYearEntity schoolYear) {
-        this.schoolYear = schoolYear;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public SchoolGradesEntity getSchoolGrades() {
-        return schoolGrades;
+    public Roles getRole() {
+        return role;
     }
 
-    public void setSchoolGrades(SchoolGradesEntity schoolGrades) {
-        this.schoolGrades = schoolGrades;
+    public void setRole(Roles role) {
+        this.role = role;
     }
 }

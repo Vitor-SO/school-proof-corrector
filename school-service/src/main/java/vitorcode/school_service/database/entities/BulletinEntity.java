@@ -9,30 +9,35 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "school_grades")
-public class SchoolGradesEntity {
+@Table(name = "bulletin")
+public class BulletinEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(precision = 4, scale = 2, nullable = false)
-    private BigDecimal grade;
+    @ManyToOne
+    @JoinColumn(name = "student_id")
+    private StudentsEntity student;
 
-    @ManyToOne
-    @JoinColumn(name = "school_year_id")
-    private SchoolYearEntity schoolYear;
-    @ManyToOne
-    @JoinColumn(name = "class_id")
-    private ClassEntity classEntity;
     @ManyToOne
     @JoinColumn(name = "subject_id")
     private SubjectEntity subject;
+
+    @ManyToOne
+    @JoinColumn(name = "academic_level_id")
+    private AcademicLevelEntity academicLevel;
+
     @ManyToOne
     @JoinColumn(name = "period_id")
     private PeriodEntity period;
+
+    @Column(precision = 4, scale = 2, nullable = false)
+    private BigDecimal grade;
+
     @Column(nullable = false, name = "created_at")
     @CreationTimestamp
     private Instant createdAt;
+
     @Column(nullable = false, name = "updated_at")
     @UpdateTimestamp
     private Instant updatedAt;
@@ -51,14 +56,6 @@ public class SchoolGradesEntity {
 
     public void setGrade(BigDecimal grade) {
         this.grade = grade;
-    }
-
-    public ClassEntity getClassEntity() {
-        return classEntity;
-    }
-
-    public void setClassEntity(ClassEntity classEntity) {
-        this.classEntity = classEntity;
     }
 
     public SubjectEntity getSubject() {
@@ -93,11 +90,19 @@ public class SchoolGradesEntity {
         this.updatedAt = updatedAt;
     }
 
-    public SchoolYearEntity getSchoolYear() {
-        return schoolYear;
+    public AcademicLevelEntity getAcademicLevel() {
+        return academicLevel;
     }
 
-    public void setSchoolYear(SchoolYearEntity schoolYear) {
-        this.schoolYear = schoolYear;
+    public void setAcademicLevel(AcademicLevelEntity academicLevel) {
+        this.academicLevel = academicLevel;
+    }
+
+    public StudentsEntity getStudent() {
+        return student;
+    }
+
+    public void setStudent(StudentsEntity student) {
+        this.student = student;
     }
 }

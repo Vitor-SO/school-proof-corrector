@@ -4,18 +4,18 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vitorcode.school_service.dtos.CreateTeacherRequest;
-import vitorcode.school_service.services.AdminTeacherService;
+import vitorcode.school_service.services.TeacherService;
 
 @RestController
 @RequestMapping("/teacher")
 public class TeacherController {
-    private final AdminTeacherService adminTeacherService;
+    private final TeacherService adminTeacherService;
 
-    public TeacherController(AdminTeacherService adminTeacherService) {
+    public TeacherController(TeacherService adminTeacherService) {
         this.adminTeacherService = adminTeacherService;
     }
 
-    @PostMapping("/admin/create")
+    @PostMapping("/create")
     public ResponseEntity<ResponseBody> create(@RequestBody @Valid CreateTeacherRequest request){
         adminTeacherService.create(request);
 

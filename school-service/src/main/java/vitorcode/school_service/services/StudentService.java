@@ -12,6 +12,7 @@ import vitorcode.school_service.exceptions.CustomNotFoundException;
 import vitorcode.school_service.repositories.*;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -23,34 +24,34 @@ public class StudentService {
     private final ClassRepository classRepository;
     private final SubjectRepository subjectRepository;
     private final PeriodRepository periodRepository;
-    private final SchoolGradesRepository schoolGradesRepository;
-    private final SchoolYearRepository schoolYearRepository;
+    private final BulletinRepository bulletinRepository;
+    private final AcademicLevelRepository academicLevelRepository;
     private final AnswersKeyRepository answersKeyRepository;
 
-    public StudentService(StudentRepository studentRepository, ClassRepository classRepository, SubjectRepository subjectRepository, PeriodRepository periodRepository, SchoolGradesRepository schoolGradesRepository, SchoolYearRepository schoolYearRepository, AnswersKeyRepository answersKeyRepository) {
+    public StudentService(StudentRepository studentRepository, ClassRepository classRepository, SubjectRepository subjectRepository, PeriodRepository periodRepository, BulletinRepository bulletinRepository, AcademicLevelRepository academicLevelRepository, AnswersKeyRepository answersKeyRepository) {
         this.studentRepository = studentRepository;
         this.classRepository = classRepository;
         this.subjectRepository = subjectRepository;
         this.periodRepository = periodRepository;
-        this.schoolGradesRepository = schoolGradesRepository;
-        this.schoolYearRepository = schoolYearRepository;
+        this.bulletinRepository = bulletinRepository;
+        this.academicLevelRepository = academicLevelRepository;
         this.answersKeyRepository = answersKeyRepository;
     }
 
     public void create(@Valid CreateStudentRequest dto) {
-        SchoolYearEntity schoolYearEntity = schoolYearRepository.findById(dto.schoolYearId())
-                .orElseThrow(() -> new CustomNotFoundException("Ano letivo não encontrado"));
+        AcademicLevelEntity academicLevelEntity = academicLevelRepository.findById(dto.academicLevelId())
+                .orElseThrow(() -> new CustomNotFoundException("Nivel Academico não encontrado"));
 
-            StudentEntity entity = new StudentEntity();
+            StudentsEntity entity = new StudentsEntity();
             entity.setName(dto.name());
-            entity.setSchoolYear(schoolYearEntity);
+            entity.setAcademicLevel(academicLevelEntity);
             studentRepository.save(entity);
     }
 
-    public void createGrade(@Valid CreateGradeRequest dto, GeminiAnswerResponse imageResponse) {
+    public void createGrade(@Valid CreateGradeRequest dto, GeminiAnswerResponse frontResponse, GeminiAnswerResponse backResponse) {
 
-        ClassEntity classEntity = classRepository.findById(dto.classId())
-                .orElseThrow(() -> new CustomNotFoundException("Turma não encontrada"));
+        StudentsEntity studentsEntity = studentRepository.findById(dto.studentId())
+                .orElseThrow(() -> new CustomNotFoundException("Estudante não encontrado"));
 
         SubjectEntity subjectEntity = subjectRepository.findById(dto.subjectId())
                 .orElseThrow(() -> new CustomNotFoundException("Disciplina não encontrada"));
@@ -58,25 +59,34 @@ public class StudentService {
         PeriodEntity periodEntity = periodRepository.findById(dto.periodId())
                 .orElseThrow(() -> new CustomNotFoundException("Período não encontrado"));
 
-        StudentEntity studentEntity = studentRepository.findById(dto.studentId())
-                .orElseThrow(() -> new CustomNotFoundException("Estudante não encontrado"));
-
         List<AnswersKeyEntity> answersKeyList = answersKeyRepository.findBySubjectId(subjectEntity.getId());
 
         if (answersKeyList.isEmpty()) {
             throw new CustomNotFoundException("Nenhuma resposta-chave encontrada para a disciplina");
         }
 
-        Map<Integer, String> studentAnswerMap = imageResponse.answers().stream()
+        Map<Integer, String> frontAnswerMap = frontResponse.answers().stream()
+                .filter(a -> a.answer() != null)
                 .collect(Collectors.toMap(
                         Answer::question,
                         Answer::answer
                 ));
 
+        Map<Integer, String> backAnswerMap = backResponse.answers().stream()
+                .filter(a -> a.answer() != null)
+                .collect(Collectors.toMap(
+                        Answer::question,
+                        Answer::answer
+                ));
+
+        Map<Integer, String> answersMap = new HashMap<>();
+        answersMap.putAll(frontAnswerMap);
+        answersMap.putAll(backAnswerMap);
+
         BigDecimal grade = answersKeyList.stream()
                 .filter(key -> Objects.equals(
                         key.getAnswer(),
-                        studentAnswerMap.get(key.getQuestion())
+                        answersMap.get(key.getQuestion())
                 ))
                 .map(AnswersKeyEntity::getGradePerQuestion)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -85,14 +95,14 @@ public class StudentService {
             throw new CalculateGradeException("Não foi possível calcular a nota do aluno");
         }
 
-        SchoolGradesEntity schoolGradesEntity = new SchoolGradesEntity();
-        schoolGradesEntity.setGrade(grade);
-        schoolGradesEntity.setClassEntity(classEntity);
-        schoolGradesEntity.setSchoolYear(studentEntity.getSchoolYear());
-        schoolGradesEntity.setSubject(subjectEntity);
-        schoolGradesEntity.setPeriod(periodEntity);
-        schoolGradesRepository.save(schoolGradesEntity);
-        studentEntity.setSchoolGrades(schoolGradesEntity);
-        studentRepository.save(studentEntity);
+        BulletinEntity bulletinEntity = new BulletinEntity();
+        bulletinEntity.setStudent(studentsEntity);
+        bulletinEntity.setSubject(subjectEntity);
+        bulletinEntity.setAcademicLevel(studentsEntity.getAcademicLevel());
+        bulletinEntity.setPeriod(periodEntity);
+        bulletinEntity.setGrade(grade);
+        bulletinRepository.save(bulletinEntity);
+        studentsEntity.setBulletin(bulletinEntity);
+        studentRepository.save(studentsEntity);
     }
 }

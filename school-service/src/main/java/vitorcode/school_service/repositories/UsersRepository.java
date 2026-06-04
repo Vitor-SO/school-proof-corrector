@@ -2,10 +2,10 @@ package vitorcode.school_service.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import vitorcode.school_service.database.entities.SchoolYearEntity;
+import vitorcode.school_service.database.entities.UsersEntity;
 
 import java.util.UUID;
 
 @Repository
-public interface SchoolYearRepository extends JpaRepository<SchoolYearEntity, UUID> {
+public interface UsersRepository extends JpaRepository<UsersEntity, UUID> {
 }

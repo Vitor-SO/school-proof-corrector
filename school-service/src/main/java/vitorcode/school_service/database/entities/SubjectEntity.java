@@ -16,12 +16,19 @@ public class SubjectEntity {
 
     @Column(unique = true)
     private String name;
+
     @ManyToOne
-    @JoinColumn(name = "class_id")
-    private ClassEntity schoolClass;
+    @JoinColumn(name = "answers_key_id")
+    private AnswersKeyEntity answersKey;
+
+    @ManyToOne
+    @JoinColumn(name = "teacher_id")
+    private TeachersEntity teacher;
+
     @Column(nullable = false, name = "created_at")
     @CreationTimestamp
     private Instant createdAt;
+
     @Column(nullable = false, name = "updated_at")
     @UpdateTimestamp
     private Instant updatedAt;
@@ -58,11 +65,19 @@ public class SubjectEntity {
         this.updatedAt = updatedAt;
     }
 
-    public ClassEntity getSchoolClass() {
-        return schoolClass;
+    public AnswersKeyEntity getAnswersKey() {
+        return answersKey;
     }
 
-    public void setSchoolClass(ClassEntity schoolClass) {
-        this.schoolClass = schoolClass;
+    public void setAnswersKey(AnswersKeyEntity answersKey) {
+        this.answersKey = answersKey;
+    }
+
+    public TeachersEntity getTeacher() {
+        return teacher;
+    }
+
+    public void setTeacher(TeachersEntity teacher) {
+        this.teacher = teacher;
     }
 }

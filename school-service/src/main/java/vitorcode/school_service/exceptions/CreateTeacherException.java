@@ -1,7 +1,7 @@
 package vitorcode.school_service.exceptions;
 
 public class CreateTeacherException extends RuntimeException {
-    public CreateTeacherException(Exception message) {
+    public CreateTeacherException(String message) {
         super(message);
     }
 }
