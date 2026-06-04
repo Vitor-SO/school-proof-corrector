@@ -1,0 +1,20 @@
+services:
+  school-proof-corrector-dev-db:
+    image: postgres:15
+    container_name: school-proof-corrector-dev-db
+    env_file: .env
+    environment:
+      POSTGRES_DB: ${DEV_POSTGRES_DB}
+      POSTGRES_USER: ${DEV_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${DEV_POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./school_proof_corrector_init.sql:/docker-entrypoint-initdb.d/school_proof_corrector_init.sql
+      - school_proof_corrector_db_data:/var/lib/postgresql/data
+volumes:
+  school_proof_corrector_db_data:
+
+networks:
+  default:
+    name: school-proof-corrector-network
