@@ -62,6 +62,7 @@ public class JwtService {
                 .issuedAt(now)
                 .expiresAt(expireAt)
                 .subject(dto.email())
+                .claim("id", dto.id())
                 .claim("tenant", dto.tenant())
                 .claim("email", dto.email())
                 .claim("role", dto.role())

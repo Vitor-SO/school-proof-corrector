@@ -65,7 +65,7 @@ public class AuthService {
         }
 
         return new LoginResponse(jwtService.generateToken(
-                new UserGenerateTokenDTO(dto.slug(), user.email(), user.role()))
+                new UserGenerateTokenDTO(user.id(),dto.slug(), user.email(), user.role()))
         );
 
     }
