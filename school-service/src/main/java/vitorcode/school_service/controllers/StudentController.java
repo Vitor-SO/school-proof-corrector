@@ -1,17 +1,19 @@
 package vitorcode.school_service.controllers;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import vitorcode.school_service.dtos.CreateGradeRequest;
-import vitorcode.school_service.dtos.CreateStudentRequest;
-import vitorcode.school_service.dtos.GeminiAnswerResponse;
+import vitorcode.school_service.database.entities.StudentsEntity;
+import vitorcode.school_service.dtos.*;
 import vitorcode.school_service.exceptions.AiMultimodalException;
 import vitorcode.school_service.services.GeminiService;
 import vitorcode.school_service.services.StudentService;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -56,6 +58,14 @@ public class StudentController {
             );
         studentService.createGrade(gradeRequest, frontResponse, backResponse);
             return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/read")
+    public PageResponse<StudentResponse> read(
+            StudentFilter filter,
+            Pageable pageable
+    ){
+        return studentService.read(filter, pageable);
     }
 
 }

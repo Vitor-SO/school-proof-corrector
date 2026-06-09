@@ -1,12 +1,12 @@
 package vitorcode.school_service.services;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import vitorcode.school_service.config.StudentFilterSpecification;
 import vitorcode.school_service.database.entities.*;
-import vitorcode.school_service.dtos.Answer;
-import vitorcode.school_service.dtos.CreateGradeRequest;
-import vitorcode.school_service.dtos.CreateStudentRequest;
-import vitorcode.school_service.dtos.GeminiAnswerResponse;
+import vitorcode.school_service.dtos.*;
 import vitorcode.school_service.exceptions.CalculateGradeException;
 import vitorcode.school_service.exceptions.CustomNotFoundException;
 import vitorcode.school_service.repositories.*;
@@ -28,7 +28,10 @@ public class StudentService {
     private final AcademicLevelRepository academicLevelRepository;
     private final AnswersKeyRepository answersKeyRepository;
 
-    public StudentService(StudentRepository studentRepository, ClassRepository classRepository, SubjectRepository subjectRepository, PeriodRepository periodRepository, BulletinRepository bulletinRepository, AcademicLevelRepository academicLevelRepository, AnswersKeyRepository answersKeyRepository) {
+    public StudentService(StudentRepository studentRepository, ClassRepository classRepository,
+                          SubjectRepository subjectRepository, PeriodRepository periodRepository,
+                          BulletinRepository bulletinRepository, AcademicLevelRepository academicLevelRepository,
+                          AnswersKeyRepository answersKeyRepository) {
         this.studentRepository = studentRepository;
         this.classRepository = classRepository;
         this.subjectRepository = subjectRepository;
@@ -104,5 +107,19 @@ public class StudentService {
         bulletinRepository.save(bulletinEntity);
         studentsEntity.setBulletin(bulletinEntity);
         studentRepository.save(studentsEntity);
+    }
+
+    public PageResponse<StudentResponse> read(StudentFilter filter, Pageable pageable) {
+        Page<StudentsEntity> page = studentRepository.findAll(StudentFilterSpecification.filter(filter), pageable);
+
+        return new PageResponse<>(
+                page.getContent().stream()
+                        .map(StudentResponse::fromEntity)
+                        .toList(),
+                page.getTotalElements(),
+                page.getTotalPages(),
+                page.getNumber(),
+                page.getSize()
+        );
     }
 }
