@@ -137,4 +137,17 @@ public class StudentService {
                 page.getSize()
         );
     }
+
+    public void update(UUID id, UpdateStudentRequest dto) {
+        StudentsEntity student = studentRepository.findById(id).orElseThrow(() -> new CustomNotFoundException("Estudante não encontrado"));
+        student.setName(dto.name());
+        if(dto.classId() != null){
+            ClassEntity classEntity = classRepository.findById(dto.classId()).orElseThrow(() -> new CustomNotFoundException("Turma não encontrada"));
+            student.setClassEntity(classEntity);
+        }
+        AcademicLevelEntity academicLevelEntity = academicLevelRepository.findById(dto.academicLevelId())
+                .orElseThrow(() -> new CustomNotFoundException("Nivel Academico não foi encontrado"));
+        student.setAcademicLevel(academicLevelEntity);
+        studentRepository.save(student);
+    }
 }

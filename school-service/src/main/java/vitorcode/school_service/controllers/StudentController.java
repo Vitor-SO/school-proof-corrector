@@ -60,4 +60,9 @@ public class StudentController {
         return studentService.read(filter, pageable);
     }
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Void> update(@PathVariable UUID id, @RequestBody UpdateStudentRequest request){
+        studentService.update(id, request);
+        return ResponseEntity.ok().build();
+    }
 }
