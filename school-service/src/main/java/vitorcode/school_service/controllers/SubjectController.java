@@ -1,10 +1,10 @@
 package vitorcode.school_service.controllers;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import vitorcode.school_service.dtos.CreateAnswersKeyRequest;
-import vitorcode.school_service.dtos.CreateSubjectRequest;
+import vitorcode.school_service.dtos.*;
 import vitorcode.school_service.services.SubjectService;
 
 @RestController
@@ -28,5 +28,10 @@ public class SubjectController {
         subjectService.createAnswersKey(request);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/read")
+    public PageResponse<SubjectResponse> read(SubjectFilter filter, Pageable pageable){
+        return subjectService.read(filter, pageable);
     }
 }

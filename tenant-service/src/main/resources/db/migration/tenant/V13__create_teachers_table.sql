@@ -8,3 +8,6 @@ CREATE TABLE IF NOT EXISTS teachers(
     CONSTRAINT fk_teachers_users FOREIGN KEY (user_id) REFERENCES users(id),
     CONSTRAINT fk_teachers_class FOREIGN KEY (class_id) REFERENCES class(id)
 );
+
+ALTER TABLE subject ADD COLUMN teacher_id UUID;
+ALTER TABLE subject ADD CONSTRAINT fk_subject_teacher FOREIGN KEY (teacher_id) REFERENCES teachers(id);

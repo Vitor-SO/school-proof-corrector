@@ -12,6 +12,3 @@ CREATE TABLE IF NOT EXISTS bulletin(
     CONSTRAINT fk_bulletin_academic_level FOREIGN KEY (academic_level_id) REFERENCES academic_level(id),
     CONSTRAINT fk_bulletin_period FOREIGN KEY (period_id) REFERENCES period(id)
 );
-
-ALTER TABLE students ADD COLUMN bulletin_id uuid;
-ALTER TABLE students ADD CONSTRAINT fk_students_bulletin FOREIGN KEY (bulletin_id) REFERENCES bulletin(id);

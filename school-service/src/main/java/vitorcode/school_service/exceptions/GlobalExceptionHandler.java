@@ -2,12 +2,14 @@ package vitorcode.school_service.exceptions;
 
 import jakarta.validation.ValidationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -83,7 +85,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public Map<String, String> handleValidationException(ValidationException ex) {
         Map<String, String> error = new HashMap<>();
-        error.put("message error: ", ex.getMessage());
+        error.put("message ", ex.getMessage());
 
         return error;
     }
@@ -96,5 +98,24 @@ public class GlobalExceptionHandler {
         error.put("message error: ", ex.getMessage());
 
         return error;
+    }
+
+    @ExceptionHandler(UpdateTeacherSubjectException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    public Map<String, String> handleUpdateTeacherSubjectException(UpdateTeacherSubjectException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("message error: ", ex.getMessage());
+
+        return error;
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<String> handleMaxSize(
+            MaxUploadSizeExceededException ex
+    ) {
+        return ResponseEntity
+                .badRequest()
+                .body("Arquivo excede o tamanho máximo permitido");
     }
 }

@@ -5,6 +5,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -24,9 +25,9 @@ public class StudentsEntity {
     @JoinColumn(name = "academic_level_id")
     private AcademicLevelEntity academicLevel;
 
-    @ManyToOne
-    @JoinColumn(name = "bulletin_id")
-    private BulletinEntity bulletin;
+    //nao tem fk no banco, apenas do lado do bulletin
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<BulletinEntity> bulletin;
 
     @Column(nullable = false, name = "created_at")
     @CreationTimestamp
@@ -76,11 +77,11 @@ public class StudentsEntity {
         this.academicLevel = academicLevel;
     }
 
-    public BulletinEntity getBulletin() {
+    public Set<BulletinEntity> getBulletin() {
         return bulletin;
     }
 
-    public void setBulletin(BulletinEntity bulletin) {
+    public void setBulletin(Set<BulletinEntity> bulletin) {
         this.bulletin = bulletin;
     }
 

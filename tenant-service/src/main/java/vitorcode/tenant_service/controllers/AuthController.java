@@ -28,7 +28,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginUserResponse> login(@RequestBody @Valid LoginTenantUserRequest request){
-        log.info("Login request received: {}", request);
         return ResponseEntity.ok().body(authService.login(request));
     }
 }

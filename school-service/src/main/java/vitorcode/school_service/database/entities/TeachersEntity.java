@@ -2,7 +2,8 @@ package vitorcode.school_service.database.entities;
 
 import jakarta.persistence.*;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -22,9 +23,13 @@ public class TeachersEntity {
     @JoinColumn(name = "class_id")
     private ClassEntity classEntity;
 
-    @ManyToOne()
-    @JoinColumn(name = "subject_id")
-    private SubjectEntity subject;
+    @OneToMany(mappedBy = "teacher")
+    private Set<SubjectEntity> subjects = new HashSet<>();
+
+    public void addSubject(SubjectEntity subject) {
+        subjects.add(subject);
+        subject.setTeacher(this);
+    }
 
     public UUID getId() {
         return id;
@@ -58,11 +63,11 @@ public class TeachersEntity {
         this.classEntity = classEntity;
     }
 
-    public SubjectEntity getSubject() {
-        return subject;
+    public Set<SubjectEntity> getSubjects() {
+        return subjects;
     }
 
-    public void setSubject(SubjectEntity subject) {
-        this.subject = subject;
+    public void setSubjects(Set<SubjectEntity> subjects) {
+        this.subjects = subjects;
     }
 }

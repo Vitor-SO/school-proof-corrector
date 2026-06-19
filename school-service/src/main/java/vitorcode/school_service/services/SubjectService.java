@@ -1,36 +1,29 @@
 package vitorcode.school_service.services;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import vitorcode.school_service.config.SubjectFilterSpecification;
 import vitorcode.school_service.database.entities.AnswersKeyEntity;
 import vitorcode.school_service.database.entities.SubjectEntity;
-import vitorcode.school_service.dtos.Answer;
-import vitorcode.school_service.dtos.CreateAnswersKeyRequest;
-import vitorcode.school_service.dtos.CreateSubjectRequest;
+import vitorcode.school_service.dtos.*;
 import vitorcode.school_service.exceptions.AlreadyExistsException;
 import vitorcode.school_service.exceptions.CustomNotFoundException;
 import vitorcode.school_service.repositories.AnswersKeyRepository;
-import vitorcode.school_service.repositories.ClassRepository;
 import vitorcode.school_service.repositories.SubjectRepository;
 
 @Service
 public class SubjectService {
     private final SubjectRepository subjectRepository;
-    private final ClassRepository classRepository;
     private final AnswersKeyRepository answersKeyRepository;
 
-    public SubjectService(SubjectRepository subjectRepository, ClassRepository classRepository, AnswersKeyRepository answersKeyRepository) {
+    public SubjectService(SubjectRepository subjectRepository, AnswersKeyRepository answersKeyRepository) {
         this.subjectRepository = subjectRepository;
-        this.classRepository = classRepository;
         this.answersKeyRepository = answersKeyRepository;
     }
 
     public void create(@Valid CreateSubjectRequest dto) {
-        boolean classIdExists = classRepository.findById(dto.classId()).isPresent();
-        if (!classIdExists) {
-            throw new CustomNotFoundException("o id da turma nao foi encontrado");
-        }
-
         boolean subjectNameAlreadyExists = subjectRepository.findByName(dto.name()).isPresent();
 
         if (subjectNameAlreadyExists) {
@@ -48,13 +41,23 @@ public class SubjectService {
 
         for (Answer answer : dto.answers()) {
             AnswersKeyEntity entity = new AnswersKeyEntity();
-
             entity.setSubject(subjectEntity);
             entity.setGradePerQuestion(dto.gradePerQuestion());
             entity.setQuestion(answer.question());
             entity.setAnswer(answer.answer());
-
             answersKeyRepository.save(entity);
         }
+    }
+
+    public PageResponse<SubjectResponse> read(SubjectFilter filter, Pageable pageable) {
+        Page<SubjectEntity> page  = subjectRepository.findAll(SubjectFilterSpecification.filter(filter), pageable);
+
+        return new PageResponse<>(
+                page.getContent().stream().map(SubjectResponse::fromEntity).toList(),
+                page.getTotalElements(),
+                page.getTotalPages(),
+                page.getNumber(),
+                page.getSize()
+        );
     }
 }

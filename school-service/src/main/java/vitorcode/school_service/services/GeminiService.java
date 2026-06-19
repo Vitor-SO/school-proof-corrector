@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.multipart.MultipartFile;
 import vitorcode.school_service.dtos.GeminiAnswerResponse;
+import vitorcode.school_service.exceptions.AiMultimodalException;
 
 import java.util.List;
 import java.util.Objects;
@@ -24,6 +25,9 @@ public class GeminiService {
     }
 
     public GeminiAnswerResponse multimodal(MultipartFile image) {
+        if(image == null){
+            return new GeminiAnswerResponse(List.of());
+        }
         BeanOutputConverter<GeminiAnswerResponse> converter =
                 new BeanOutputConverter<>(GeminiAnswerResponse.class);
 
@@ -46,7 +50,7 @@ public class GeminiService {
             ChatResponse response = chatModel.call(new Prompt(List.of(userMessage)));
             return converter.convert(Objects.requireNonNull(response.getResult().getOutput().getText()));
         }catch (Exception e){
-            throw new RuntimeException(e);
+            throw new AiMultimodalException(e.getMessage());
         }
     }
 }

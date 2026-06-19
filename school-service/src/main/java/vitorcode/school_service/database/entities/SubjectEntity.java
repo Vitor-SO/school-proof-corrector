@@ -5,6 +5,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -17,9 +18,8 @@ public class SubjectEntity {
     @Column(unique = true)
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "answers_key_id")
-    private AnswersKeyEntity answersKey;
+    @OneToMany(mappedBy = "subject")
+    private List<AnswersKeyEntity> answersKey;
 
     @ManyToOne
     @JoinColumn(name = "teacher_id")
@@ -65,11 +65,11 @@ public class SubjectEntity {
         this.updatedAt = updatedAt;
     }
 
-    public AnswersKeyEntity getAnswersKey() {
+    public List<AnswersKeyEntity> getAnswersKey() {
         return answersKey;
     }
 
-    public void setAnswersKey(AnswersKeyEntity answersKey) {
+    public void setAnswersKey(List<AnswersKeyEntity> answersKey) {
         this.answersKey = answersKey;
     }
 

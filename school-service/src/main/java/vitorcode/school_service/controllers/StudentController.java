@@ -1,24 +1,23 @@
 package vitorcode.school_service.controllers;
 
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import vitorcode.school_service.database.entities.StudentsEntity;
 import vitorcode.school_service.dtos.*;
-import vitorcode.school_service.exceptions.AiMultimodalException;
 import vitorcode.school_service.services.GeminiService;
 import vitorcode.school_service.services.StudentService;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/student")
 public class StudentController {
+    private static final Logger log = LoggerFactory.getLogger(StudentController.class);
     private final StudentService studentService;
     private final GeminiService geminiService;
 
@@ -38,26 +37,19 @@ public class StudentController {
             @RequestParam("studentId") UUID studentId,
             @RequestParam("subjectId") UUID subjectId,
             @RequestParam("periodId") UUID periodId,
-            @RequestParam("front") MultipartFile front,
-            @RequestParam("back") MultipartFile back)
+            @RequestParam(value = "front", required = false) MultipartFile front,
+            @RequestParam(value = "back", required = false) MultipartFile back)
         {
             GeminiAnswerResponse frontResponse = geminiService.multimodal(front);
-            if (frontResponse == null) {
-                throw new AiMultimodalException("Não foi possivel obter a resposta da imagem frontal");
-            }
-
             GeminiAnswerResponse backResponse = geminiService.multimodal(back);
-            if (backResponse == null) {
-                throw new AiMultimodalException("Não foi possivel obter a resposta da imagem do verso");
-            }
 
             CreateGradeRequest gradeRequest = new CreateGradeRequest(
                     studentId,
                     subjectId,
                     periodId
             );
-        studentService.createGrade(gradeRequest, frontResponse, backResponse);
-            return ResponseEntity.ok().build();
+            studentService.createGrade(gradeRequest, frontResponse, backResponse);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/read")

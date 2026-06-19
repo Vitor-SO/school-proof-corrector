@@ -21,7 +21,7 @@ public class AnswersKeyEntity {
     private String answer;
 
     @ManyToOne
-    @JoinColumn(name = "subject_id")
+    @JoinColumn(name = "subject_id", nullable = false)
     private SubjectEntity subject;
 
     public UUID getId() {

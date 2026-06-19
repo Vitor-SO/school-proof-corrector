@@ -1,6 +1,8 @@
 package vitorcode.school_service.services;
 
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -12,14 +14,12 @@ import vitorcode.school_service.exceptions.CustomNotFoundException;
 import vitorcode.school_service.repositories.*;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class StudentService {
+    private static final Logger log = LoggerFactory.getLogger(StudentService.class);
     private final StudentRepository studentRepository;
     private final ClassRepository classRepository;
     private final SubjectRepository subjectRepository;
@@ -65,26 +65,41 @@ public class StudentService {
         List<AnswersKeyEntity> answersKeyList = answersKeyRepository.findBySubjectId(subjectEntity.getId());
 
         if (answersKeyList.isEmpty()) {
-            throw new CustomNotFoundException("Nenhuma resposta-chave encontrada para a disciplina");
+            throw new CustomNotFoundException("Nenhum item de resposta associado a disciplina foi encontrado");
         }
 
-        Map<Integer, String> frontAnswerMap = frontResponse.answers().stream()
-                .filter(a -> a.answer() != null)
-                .collect(Collectors.toMap(
-                        Answer::question,
-                        Answer::answer
-                ));
-
-        Map<Integer, String> backAnswerMap = backResponse.answers().stream()
-                .filter(a -> a.answer() != null)
-                .collect(Collectors.toMap(
-                        Answer::question,
-                        Answer::answer
-                ));
+        Map<Integer, String> frontAnswerMap =
+                Optional.ofNullable(frontResponse.answers())
+                        .orElse(Collections.emptyList())
+                        .stream()
+                        .filter(Objects::nonNull)
+                        .filter(a -> a.question() != null)
+                        .filter(a -> a.answer() != null)
+                        .collect(Collectors.toMap(
+                                Answer::question,
+                                Answer::answer,
+                                (oldValue, newValue) -> newValue
+                        ));
+	log.info("frontAnswerMap {}", frontAnswerMap);
+        Map<Integer, String> backAnswerMap =
+                Optional.ofNullable(backResponse.answers())
+                        .orElse(Collections.emptyList())
+                        .stream()
+                        .filter(Objects::nonNull)
+                        .filter(a -> a.question() != null)
+                        .filter(a -> a.answer() != null)
+                        .collect(Collectors.toMap(
+                                Answer::question,
+                                Answer::answer,
+                                (oldValue, newValue) -> newValue
+                        ));
+	log.info("backAnswerMap {}", backAnswerMap);
 
         Map<Integer, String> answersMap = new HashMap<>();
         answersMap.putAll(frontAnswerMap);
         answersMap.putAll(backAnswerMap);
+
+	log.info("answersMap {}", answersMap);
 
         BigDecimal grade = answersKeyList.stream()
                 .filter(key -> Objects.equals(
@@ -98,6 +113,8 @@ public class StudentService {
             throw new CalculateGradeException("Não foi possível calcular a nota do aluno");
         }
 
+	log.info("grade {}", grade);
+
         BulletinEntity bulletinEntity = new BulletinEntity();
         bulletinEntity.setStudent(studentsEntity);
         bulletinEntity.setSubject(subjectEntity);
@@ -105,8 +122,6 @@ public class StudentService {
         bulletinEntity.setPeriod(periodEntity);
         bulletinEntity.setGrade(grade);
         bulletinRepository.save(bulletinEntity);
-        studentsEntity.setBulletin(bulletinEntity);
-        studentRepository.save(studentsEntity);
     }
 
     public PageResponse<StudentResponse> read(StudentFilter filter, Pageable pageable) {
