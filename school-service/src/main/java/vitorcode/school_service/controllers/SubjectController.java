@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import vitorcode.school_service.dtos.*;
 import vitorcode.school_service.services.SubjectService;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/subject")
 public class SubjectController {
@@ -23,15 +25,28 @@ public class SubjectController {
         return ResponseEntity.ok().build();
     }
 
+
+    @GetMapping("/read")
+    public PageResponse<SubjectResponse> read(SubjectFilter filter, Pageable pageable){
+        return subjectService.read(filter, pageable);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Void> update(@PathVariable UUID id, @RequestBody @Valid UpdateSubjectRequest request){
+        subjectService.update(id, request);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> delete(@PathVariable UUID id){
+        subjectService.delete(id);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("answers-key")
     public ResponseEntity<ResponseBody> createAnswersKey(@RequestBody @Valid CreateAnswersKeyRequest request){
         subjectService.createAnswersKey(request);
 
         return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/read")
-    public PageResponse<SubjectResponse> read(SubjectFilter filter, Pageable pageable){
-        return subjectService.read(filter, pageable);
     }
 }

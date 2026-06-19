@@ -13,6 +13,8 @@ import vitorcode.school_service.exceptions.CustomNotFoundException;
 import vitorcode.school_service.repositories.AnswersKeyRepository;
 import vitorcode.school_service.repositories.SubjectRepository;
 
+import java.util.UUID;
+
 @Service
 public class SubjectService {
     private final SubjectRepository subjectRepository;
@@ -59,5 +61,19 @@ public class SubjectService {
                 page.getNumber(),
                 page.getSize()
         );
+    }
+
+    public void update(UUID id, @Valid UpdateSubjectRequest dto) {
+        SubjectEntity subjectEntity = subjectRepository.findById(id)
+                .orElseThrow(() -> new CustomNotFoundException("Disciplina nao foi encontrada"));
+
+        subjectEntity.setName(dto.name());
+        subjectRepository.save(subjectEntity);
+    }
+
+    public void delete(UUID id) {
+        subjectRepository.findById(id)
+                .orElseThrow(() -> new CustomNotFoundException("Disciplina nao foi encontrada"));
+        subjectRepository.deleteById(id);
     }
 }

@@ -7,6 +7,6 @@ import java.util.UUID;
 
 public record UpdateTeacherSubjectRequest(
         @NotBlank UUID id,
-        List<UpdateSubjectRequest> subjectsId
+        List<UUID> subjectsId
 ) {
 }

@@ -40,16 +40,18 @@ public class TeacherService {
             throw new CreateTeacherException("Role professor not found");
         }
 
-        SubjectEntity subjectEntity = null;
-
-        if (dto.subjectId() != null) {
-            subjectEntity = subjectRepository.findById(dto.subjectId())
-                    .orElseThrow(() -> new CustomNotFoundException("Disciplina não encontrada"));
-        }
-
         TeachersEntity hasTeacherCreated = teacherRepository.findByName(dto.name());
         if (hasTeacherCreated != null) {
             throw new CreateTeacherException("Professor já cadastrado");
+        }
+
+        TeachersEntity teacher = new TeachersEntity();
+
+        if (dto.subjectId() != null) {
+            SubjectEntity subjectEntity = subjectRepository.findById(dto.subjectId())
+                    .orElseThrow(() -> new CustomNotFoundException("Disciplina não encontrada"));
+
+            teacher.addSubject(subjectEntity);
         }
 
         UsersEntity usersEntity = new UsersEntity();
@@ -58,12 +60,10 @@ public class TeacherService {
         usersEntity.setPassword(new BCryptPasswordEncoder().encode(dto.password()));
         usersEntity.setRole(role);
         usersRepository.save(usersEntity);
-        TeachersEntity teacher = new TeachersEntity();
+
+        //teacher
         teacher.setName(dto.name());
         teacher.setUser(usersEntity);
-        if(subjectEntity != null){
-            teacher.addSubject(subjectEntity);
-        }
         teacherRepository.save(teacher);
     }
 
@@ -89,11 +89,11 @@ public class TeacherService {
             throw new UpdateTeacherSubjectException("Disciplina não encontrada");
         }
 
-        dto.subjectsId().forEach(subject -> subjectRepository.findById(subject.id())
+        dto.subjectsId().forEach(id -> subjectRepository.findById(id)
                 .orElseThrow(() -> new CustomNotFoundException("Disciplina não encontrada")));
 
-        dto.subjectsId().forEach(subject ->
-                teacher.addSubject(subjectRepository.getReferenceById(subject.id()))
+        dto.subjectsId().forEach(id ->
+                teacher.addSubject(subjectRepository.getReferenceById(id))
         );
 
         teacherRepository.save(teacher);

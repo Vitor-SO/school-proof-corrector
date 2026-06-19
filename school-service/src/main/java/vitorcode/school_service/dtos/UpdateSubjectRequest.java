@@ -1,7 +1,7 @@
 package vitorcode.school_service.dtos;
 
-import java.util.UUID;
+import jakarta.validation.constraints.NotBlank;
 
 public record UpdateSubjectRequest(
-        UUID id
+        @NotBlank String name
 ){}
