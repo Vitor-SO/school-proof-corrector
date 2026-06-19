@@ -118,4 +118,14 @@ public class GlobalExceptionHandler {
                 .badRequest()
                 .body("Arquivo excede o tamanho máximo permitido");
     }
+
+    @ExceptionHandler(AlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseBody
+    public Map<String, String> handleAlreadyExistsException(AlreadyExistsException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("message", ex.getMessage());
+
+        return error;
+    }
 }

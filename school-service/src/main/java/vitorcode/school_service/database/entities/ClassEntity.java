@@ -14,6 +14,7 @@ public class ClassEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(nullable = false, unique = true)
     private String name;
 
     @Column(nullable = false, name = "created_at")
