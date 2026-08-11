@@ -3,7 +3,6 @@ package vitorcode.school_proof_corrector.core.ui.viewModels
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,34 +14,19 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
-import vitorcode.school_proof_corrector.core.domain.model.PeriodResponse
-import vitorcode.school_proof_corrector.core.domain.model.SubjectResponse
 import vitorcode.school_proof_corrector.core.ui.intents.CreateBulletinIntent
 import vitorcode.school_proof_corrector.core.ui.states.CreateBulletinUiState
-import vitorcode.school_proof_corrector.data.repositories.PeriodRepositoryImpl
-import vitorcode.school_proof_corrector.data.repositories.StudentRepositoryImpl
-import vitorcode.school_proof_corrector.data.repositories.TeacherRepositoryImpl
-import java.util.UUID
+import vitorcode.school_proof_corrector.data.repositories.BulletinRepositoryImpl
 import javax.inject.Inject
 
 @HiltViewModel
 class CreateBulletinViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val teacherRepository: TeacherRepositoryImpl,
-    private val periodRepository: PeriodRepositoryImpl,
-    private val studentRepository: StudentRepositoryImpl
+    private val bulletinRepository: BulletinRepositoryImpl
 ): ViewModel() {
     private val _state = MutableStateFlow(CreateBulletinUiState())
     val state = _state.asStateFlow()
-
-    val studentId: UUID = UUID.fromString(
-        checkNotNull(savedStateHandle["studentId"])
-    )
-
     fun onCreateBulletinIntent(intent: CreateBulletinIntent){
         when(intent){
-            CreateBulletinIntent.LoadSubjectsFromTeacher ->loadSubjectsFromTeacher()
-            CreateBulletinIntent.LoadPeriods -> loadPeriods()
             is CreateBulletinIntent.PhotoFrontCaptured -> {
                 _state.update {
                     it.copy(frontImageUri = intent.uri)
@@ -53,73 +37,6 @@ class CreateBulletinViewModel @Inject constructor(
                     it.copy(backImageUri = intent.uri)
                 }
             }
-
-            CreateBulletinIntent.OpenCamera -> Unit
-        }
-    }
-
-    private fun loadPeriods() {
-        viewModelScope.launch {
-            _state.update {
-                it.copy(isLoading = true, error = null)
-            }
-
-            try {
-                val response = periodRepository.getPeriods().items
-                _state.update {
-                    it.copy(
-                        periods = response,
-                        isLoading = false,
-                        error = null
-                    )
-                }
-            } catch (e: Exception){
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        error = e.message
-                    )
-                }
-            }
-        }
-    }
-
-    fun loadSubjectsFromTeacher(){
-        viewModelScope.launch {
-            _state.update {
-                it.copy(isLoading = true, error = null)
-            }
-
-            try {
-                val response = teacherRepository.getSubjects()
-                _state.update {
-                    it.copy(
-                        subjects = response,
-                        isLoading = false,
-                        error = null
-                    )
-                }
-            }catch (e: Exception) {
-
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        error = e.message
-                    )
-                }
-            }
-        }
-    }
-
-    fun onSelectSubject(subject: SubjectResponse) {
-        _state.update {
-            it.copy(selectedSubject = subject)
-        }
-    }
-
-    fun onSelectPeriod(period: PeriodResponse) {
-        _state.update {
-            it.copy(periodSelected = period)
         }
     }
 
@@ -141,14 +58,13 @@ class CreateBulletinViewModel @Inject constructor(
                     createMultipartFromUri(
                         context = context,
                         imageUri = uri,
-                        filename = "front"
+                        filename = "back"
                     )
                 }
 
-                studentRepository.createBulletin(
-                    studentId = studentId,
-                    subjectId = _state.value.selectedSubject.id,
-                    periodId = _state.value.periodSelected.id,
+                Log.d("CreateBulletinViewModel", "$frontMultipartResponse")
+
+                bulletinRepository.createBulletin(
                     frontImage = frontMultipartResponse,
                     backImage = backMultipartResponse
                 )

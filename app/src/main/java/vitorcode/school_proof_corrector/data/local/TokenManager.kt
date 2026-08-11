@@ -5,7 +5,6 @@ import androidx.core.content.edit
 import com.auth0.jwt.JWT
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.json.JSONObject
-import vitorcode.school_proof_corrector.core.domain.model.UserRole
 import java.util.Base64
 import java.util.UUID
 import javax.inject.Inject
@@ -79,16 +78,6 @@ class TokenManager @Inject constructor(
 
         } catch (_: Exception) {
             true
-        }
-    }
-
-    fun getUserRole(): UserRole? {
-        val token = getToken() ?: return null
-        val jwt = JWT()
-        return when(jwt.decodeJwt(token).getClaim("role").asString()) {
-            "professor" -> UserRole.professor
-            "aluno" -> UserRole.aluno
-            else -> null
         }
     }
 

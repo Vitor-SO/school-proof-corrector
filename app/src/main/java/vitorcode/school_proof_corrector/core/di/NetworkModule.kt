@@ -1,24 +1,15 @@
 package vitorcode.school_proof_corrector.core.di
 
-import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import vitorcode.school_proof_corrector.data.remote.AuthApi
 import javax.inject.Singleton
-import kotlin.jvm.java
 import vitorcode.school_proof_corrector.BuildConfig
-import vitorcode.school_proof_corrector.core.config.AuthInterceptor
-import vitorcode.school_proof_corrector.data.local.TokenManager
-import vitorcode.school_proof_corrector.data.remote.PeriodApi
-import vitorcode.school_proof_corrector.data.remote.StudentApi
-import vitorcode.school_proof_corrector.data.remote.SubjectApi
-import vitorcode.school_proof_corrector.data.remote.TeacherApi
+import vitorcode.school_proof_corrector.data.remote.ProcessImageApi
 import java.util.concurrent.TimeUnit
 
 
@@ -31,20 +22,9 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideAuthInterceptor(
-        tokenManager: TokenManager
-    ): AuthInterceptor {
-        return AuthInterceptor(tokenManager)
-    }
-
-    @Provides
-    @Singleton
-    fun provideOkHttpClient(
-        authInterceptor: AuthInterceptor
-    ): OkHttpClient {
+    fun provideOkHttpClient(): OkHttpClient {
 
         return OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(120, TimeUnit.SECONDS)
             .writeTimeout(120, TimeUnit.SECONDS)
@@ -69,41 +49,9 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideAuthApi(
+    fun provideProcessImageApi(
         retrofit: Retrofit
-    ): AuthApi {
-        return retrofit.create(AuthApi::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideStudentApi(
-        retrofit: Retrofit
-    ): StudentApi {
-        return retrofit.create(StudentApi::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideSubjectApi(
-        retrofit: Retrofit
-    ): SubjectApi {
-        return retrofit.create(SubjectApi::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideTeacherApi(
-        retrofit: Retrofit
-    ): TeacherApi {
-        return retrofit.create(TeacherApi::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun providePeriodApi(
-        retrofit: Retrofit
-    ): PeriodApi {
-        return retrofit.create(PeriodApi::class.java)
+    ): ProcessImageApi {
+        return retrofit.create(ProcessImageApi::class.java)
     }
 }

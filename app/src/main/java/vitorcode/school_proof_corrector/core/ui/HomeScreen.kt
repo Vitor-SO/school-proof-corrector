@@ -30,24 +30,13 @@ import vitorcode.school_proof_corrector.core.ui.viewModels.CreateBulletinViewMod
 import java.io.File
 
 @Composable
-fun CreateBulletinScreen(
+fun HomeScreen(
     navController: NavController,
     viewModel: CreateBulletinViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
-    val studentId = viewModel.studentId
-    val subjects = state.value.subjects
-    val periods = state.value.periods
     val context = LocalContext.current
 
-    LaunchedEffect(Unit) {
-        viewModel.onCreateBulletinIntent(
-            CreateBulletinIntent.LoadSubjectsFromTeacher
-        )
-        viewModel.onCreateBulletinIntent(
-            CreateBulletinIntent.LoadPeriods
-        )
-    }
 
     var frontImageUri by remember {
         mutableStateOf<Uri?>(null)
@@ -89,25 +78,6 @@ fun CreateBulletinScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        SearchableDropdown(
-            options = subjects,
-            selectedItem = state.value.selectedSubject,
-            onItemSelected = viewModel::onSelectSubject,
-            itemLabel = {it.name},
-            label = "Selecione a disciplina"
-        )
-
-        Spacer(modifier = Modifier.height(20. dp))
-
-        SearchableDropdown(
-            options = periods,
-            selectedItem = state.value.periodSelected,
-            onItemSelected = viewModel::onSelectPeriod,
-            itemLabel = {it.name},
-            label = "Selecione o período letivo"
-        )
-
-        Spacer(modifier = Modifier.height(20. dp))
 
         Button(
             onClick = {
