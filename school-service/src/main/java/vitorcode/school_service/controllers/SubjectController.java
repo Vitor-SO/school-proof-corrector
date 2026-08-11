@@ -44,8 +44,15 @@ public class SubjectController {
     }
 
     @PostMapping("answers-key")
-    public ResponseEntity<ResponseBody> createAnswersKey(@RequestBody @Valid CreateAnswersKeyRequest request){
+    public ResponseEntity<Void> createAnswersKey(@RequestBody @Valid CreateAnswersKeyRequest request){
         subjectService.createAnswersKey(request);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("answers-key/update/{id}")
+    public ResponseEntity<Void> updateAnswersKey(@PathVariable UUID id, @RequestBody @Valid UpdateAnswersKeyRequest request){
+        subjectService.updateAnswersKey(id, request);
 
         return ResponseEntity.ok().build();
     }

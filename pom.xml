@@ -14,6 +14,7 @@
         <module>school-service</module>
         <module>gateway-security-lib</module>
         <module>multi-tenant-lib</module>
+        <module>gemini-api</module>
     </modules>
 
 	<parent>

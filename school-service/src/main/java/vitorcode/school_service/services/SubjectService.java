@@ -13,6 +13,8 @@ import vitorcode.school_service.exceptions.CustomNotFoundException;
 import vitorcode.school_service.repositories.AnswersKeyRepository;
 import vitorcode.school_service.repositories.SubjectRepository;
 
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -75,5 +77,21 @@ public class SubjectService {
         subjectRepository.findById(id)
                 .orElseThrow(() -> new CustomNotFoundException("Disciplina nao foi encontrada"));
         subjectRepository.deleteById(id);
+    }
+
+    public void updateAnswersKey(UUID id, @Valid UpdateAnswersKeyRequest dto) {
+        AnswersKeyEntity answersKeyEntity = answersKeyRepository.findById(id)
+                .orElseThrow(() -> new CustomNotFoundException("Cartão de respostas nao foi encontrado"));
+
+        if(dto.gradePerQuestion() == null || dto.answers().isEmpty()){
+            throw new CustomNotFoundException("Respostas e nota por questão são obrigatórias");
+        }
+
+        answersKeyEntity.setGradePerQuestion(dto.gradePerQuestion());
+        List<AnswersKeyEntity> currentAnswers = answersKeyEntity.getSubject().getAnswersKey().stream().toList();
+        List<AnswersKeyEntity> newAnswers = dto.answers();
+
+        Set<UUID> newIds = newAnswers.stream().map()
+
     }
 }
