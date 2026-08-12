@@ -6,5 +6,5 @@ import vitorcode.school_proof_corrector.core.domain.model.SignInRequest
 interface ISignInRepository {
     suspend fun signIn(
         request: SignInRequest
-    ): Response<Any>
+    ): Response<Unit>
 }

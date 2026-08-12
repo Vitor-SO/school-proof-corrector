@@ -8,7 +8,6 @@ import vitorcode.school_proof_corrector.core.domain.model.LoginResponse
 import vitorcode.school_proof_corrector.core.domain.model.SignInRequest
 
 interface AuthApi {
-
     @POST("auth/login")
     suspend fun login(
         @Body request: LoginRequest
@@ -17,5 +16,5 @@ interface AuthApi {
     @POST("tenant/create")
     suspend fun signIn(
         @Body request: SignInRequest
-    ): Response<Any>
+    ): Response<Unit>
 }

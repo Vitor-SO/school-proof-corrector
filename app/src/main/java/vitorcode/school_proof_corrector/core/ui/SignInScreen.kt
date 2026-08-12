@@ -1,5 +1,6 @@
 package vitorcode.school_proof_corrector.core.ui
 
+import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -20,6 +22,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import vitorcode.school_proof_corrector.core.ui.events.SignInUiEvent
 import vitorcode.school_proof_corrector.core.ui.viewModels.SignInViewModel
 
 @Composable
@@ -28,6 +31,18 @@ fun SignInScreen(
     viewModel: SignInViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+                SignInUiEvent.NavigateToLogin -> {
+                    navController.navigate("login"){
+                        popUpTo("login"){inclusive = true}
+                    }
+                }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -38,32 +53,10 @@ fun SignInScreen(
     ) {
 
         OutlinedTextField(
-            value = state.schoolName,
-            onValueChange = viewModel::onSchoolNameChange,
-            label = {
-                Text("Nome da escola")
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        OutlinedTextField(
             value = state.slug,
             onValueChange = viewModel::onSlugChange,
             label = {
-                Text("Nome encurtado da escola")
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        OutlinedTextField(
-            value = state.schoolEmail,
-            onValueChange = viewModel::onSchoolEmailChange,
-            label = {
-                Text("Email da escola")
+                Text("Identificador")
             },
             modifier = Modifier.fillMaxWidth()
         )
@@ -112,6 +105,24 @@ fun SignInScreen(
         ) {
 
             Text("Criar conta")
+        }
+
+        if (state.isSuccess) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Conta criada com sucesso",
+                color = Color.Green
+            )
+        }
+
+        state.error?.let {
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = it,
+                color = Color.Red
+            )
         }
     }
 }

@@ -11,7 +11,7 @@ class SignInRepositoryImpl @Inject constructor(
 
     override suspend fun signIn(
         request: SignInRequest
-    ): Response<Any> {
+    ): Response<Unit> {
         return authApi.signIn(request)
     }
 }

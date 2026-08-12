@@ -21,7 +21,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
-import vitorcode.school_proof_corrector.core.ui.events.AuthEvent
+import vitorcode.school_proof_corrector.core.ui.events.LoginUiEvent
 import vitorcode.school_proof_corrector.core.ui.viewModels.LoginViewModel
 
 @Composable
@@ -34,14 +34,9 @@ fun LoginScreen(
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             when (event) {
-                AuthEvent.NavigateToTeacherScreen -> {
-                    navController.navigate("teacher_screen") {
-                        popUpTo("login") { inclusive = true }
-                    }
-                }
-                AuthEvent.NavigateToStudentScreen -> {
-                    navController.navigate("student_screen") {
-                        popUpTo("login") { inclusive = true }
+                LoginUiEvent.NavigateToHome -> {
+                    navController.navigate("home") {
+                        popUpTo("home") { inclusive = true }
                     }
                 }
             }
@@ -102,6 +97,14 @@ fun LoginScreen(
             } else {
                 Text("Entrar")
             }
+        }
+
+        if (state.isSuccess) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Login feito com sucesso",
+                color = Color.Green
+            )
         }
 
         state.error?.let {

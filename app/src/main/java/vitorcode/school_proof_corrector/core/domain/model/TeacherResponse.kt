@@ -5,7 +5,5 @@ import java.util.UUID
 data class TeacherResponse (
     val id: UUID,
     val name: String,
-    val userId: UUID,
-    val classResponse: ClassResponse?,
-    val subjectResponse: List<SubjectResponse>?
+    val userId: UUID
 )
